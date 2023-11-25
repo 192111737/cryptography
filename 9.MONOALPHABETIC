@@ -1,0 +1,98 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h> 
+
+#define ALPHABET_SIZE 26
+
+void generateCipherSequence(char *keyword, char *cipherSequence) {
+    int keywordLength = strlen(keyword);
+    int index = 0;
+    for (int i = 0; i < keywordLength; i++) {
+        if (keyword[i] != ' ') {
+            int j;
+            for (j = 0; j < index; j++) {
+                if (cipherSequence[j] == keyword[i]) {
+                    break;
+                }
+            }
+            if (j == index) {
+                cipherSequence[index++] = keyword[i];
+            }
+        }
+    }
+    for (char ch = 'A'; ch <= 'Z'; ch++) {
+        if (ch != 'J') {  
+            int i;
+            for (i = 0; i < index; i++) {
+                if (cipherSequence[i] == ch) {
+                    break;
+                }
+            }
+
+            if (i == index) {
+                cipherSequence[index++] = ch;
+            }
+        }
+    }
+
+    cipherSequence[index] = '\0';  
+}
+
+void encryptMessage(char *plaintext, char *cipherSequence, char *ciphertext) {
+    int length = strlen(plaintext);
+
+    for (int i = 0; i < length; i++) {
+        if (plaintext[i] != ' ') {
+            
+			 char *pos = strchr("ABCDEFGHIJKLMNOPQRSTUVWXYZ", plaintext[i]);
+            if (pos != NULL) {
+                int index = pos - "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                ciphertext[i] = cipherSequence[index];
+            }
+        } else {
+          
+            ciphertext[i] = ' ';
+        }
+    }
+
+    ciphertext[length] = '\0';  
+
+int main() {
+    char keyword[50];
+    char plaintext[1000];
+    char cipherSequence[ALPHABET_SIZE + 1];  // +1 for null-termination
+    char ciphertext[1000];
+
+    // Get the keyword from the user
+    printf("Enter the keyword (letters only, no spaces): ");
+    scanf("%s", keyword);
+
+    // Convert the keyword to uppercase
+    for (int i = 0; i < strlen(keyword); i++) {
+        keyword[i] = toupper(keyword[i]);
+    }
+
+    // Generate the cipher sequence based on the keyword
+    generateCipherSequence(keyword, cipherSequence);
+
+    // Get the plaintext message from the user
+    printf("Enter the plaintext message: ");
+    getchar();  // Consume the newline character left by the previous scanf
+    fgets(plaintext, sizeof(plaintext), stdin);
+
+    // Convert the plaintext to uppercase
+    for (int i = 0; i < strlen(plaintext); i++) {
+        plaintext[i] = toupper(plaintext[i]);
+    }
+
+    // Encrypt the plaintext message
+    encryptMessage(plaintext, cipherSequence, ciphertext);
+
+    // Display the generated cipher sequence
+    printf("\nGenerated Cipher Sequence: %s\n", cipherSequence);
+
+    // Display the encrypted ciphertext
+    printf("\nEncrypted Ciphertext: %s\n", ciphertext);
+
+    return 0;
+}
